@@ -29,4 +29,11 @@ data = sheet.get_all_records()
 # Convert the list of dictionaries into a data frame
 dataframe = pd.DataFrame(sheet.get_all_records())
 
-#print(dataframe)
+# We only care about the Name, EID, Major, Year, Email, and the 5 preferences
+# Delete multiple columns from the dataframe
+dataframe = dataframe.drop(["Timestamp","Your Organization","Where did you hear about this event?","Vegetarian Meal Required?",
+                            "Please list any food allergies or dietary restrictions.",
+                            "If you are a Junior or Senior BME please select which track you are in or plan on being in."], axis=1)
+print(dataframe)
+
+# For each student: Grab five preferences and make it into a list to find the 2 combinations that work
