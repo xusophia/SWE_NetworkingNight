@@ -8,7 +8,9 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from pprint import pprint
 import pandas as pd
+import xlsxwriter
 from collections import defaultdict
+import gspread_dataframe as gd
 
 def Merge(*dict_args):
     assignments = {}
@@ -82,7 +84,7 @@ for student in students_df.itertuples():
     student_preferences = [first,second,third,fourth,fifth]
     # Clear matchFound flag
     matchFound = 0
-    co = company1 = companies_df.at['Accenture', 'Entree']
+
     # for loop that finds combinations where the combinations that work
     for preference1 in student_preferences:
         for preference2 in student_preferences:
@@ -117,7 +119,7 @@ for student in students_df.itertuples():
         for preference in student_preferences:
             findEntree_df = companies_df.loc[[preference]]
             findEntree_df = findEntree_df[findEntree_df['Entree'] > 0]
-            if not findEntree_df.empty:
+            if not findEntree_df.empty & matchFound != 1:
                 # Find companies that want that major for Dessert
                 # Need to search by matching string for majors + open spots
                 pickDessert_df = companies_df[(companies_df['Majors'].str.contains(major)) & (companies_df['Dessert'] > 0)]
@@ -133,29 +135,29 @@ for student in students_df.itertuples():
                     print(len(dessert_dict['Dessert Seating:']))
                     print('----------------------')
                     matchFound = 1
-                else:
-                    # If match if not found, now STUDENT picks Dessert, WE pick Entree
-                    for preference in student_preferences:
-                        findDessert_df = companies_df.loc[[preference]]
-                        findDessert_df = findDessert_df[findDessert_df['Dessert'] > 0]
-                        if not findDessert_df.empty:
-                            pickEntree_df = companies_df[(companies_df['Majors'].str.contains(major)) & companies_df['Entree'].between(1,7)]
-                            if not pickEntree_df.empty:
-                                companies_df.at[preference,'Dessert']=companies_df.at[preference,'Dessert'] - 1
-                                entree_co_labels = pickEntree_df.axes[0].tolist()
-                                entree_company = entree_co_labels[0]
-                                companies_df.at[entree_company,'Entree'] = companies_df.at[entree_company,'Entree'] - 1
-                                entree_dict['Entree Seating:'].append(entree_company)
-                                dessert_dict['Dessert Seating:'].append(preference)
-                                print(len(entree_dict['Entree Seating:']))
-                                print(len(dessert_dict['Dessert Seating:']))
-                                print('^^^^^^^^^^^^^^^^^^^^^^^^')
-                            else: # all solutions have failed
-                                entree_dict['Entree Seating:'].append("failed")
-                                dessert_dict['Dessert Seating:'].append("failed")
-                                print(len(entree_dict['Entree Seating:']))
-                                print(len(dessert_dict['Dessert Seating:']))
-                                print('+++++++++++++++++++++++')
+    if matchFound == 0:
+        for preference in student_preferences:
+            findDessert_df = companies_df.loc[[preference]]
+            findDessert_df = findDessert_df[findDessert_df['Dessert'] > 0]
+            if (not findDessert_df.empty) & (matchFound != 1):
+                pickEntree_df = companies_df[(companies_df['Majors'].str.contains(major)) & companies_df['Entree'].between(1,7)]
+                if not pickEntree_df.empty:
+                    companies_df.at[preference,'Dessert']=companies_df.at[preference,'Dessert'] - 1
+                    entree_co_labels = pickEntree_df.axes[0].tolist()
+                    entree_company = entree_co_labels[0]
+                    companies_df.at[entree_company,'Entree'] = companies_df.at[entree_company,'Entree'] - 1
+                    entree_dict['Entree Seating:'].append(entree_company)
+                    dessert_dict['Dessert Seating:'].append(preference)
+                    print(len(entree_dict['Entree Seating:']))
+                    print(len(dessert_dict['Dessert Seating:']))
+                    print('^^^^^^^^^^^^^^^^^^^^^^^^')
+                    matchFound = 1
+    if matchFound == 0: # all solutions have failed
+        entree_dict['Entree Seating:'].append("failed")
+        dessert_dict['Dessert Seating:'].append("failed")
+        print(len(entree_dict['Entree Seating:']))
+        print(len(dessert_dict['Dessert Seating:']))
+        print('+++++++++++++++++++++++')
 
 
 # Now, Combine all of the dictionaries created into a data frame
@@ -167,9 +169,27 @@ print(len(year_dict['Year:']))
 print(len(email_dict['E-mail:']))
 print(len(entree_dict['Entree Seating:']))
 print(len(dessert_dict['Dessert Seating:']))
-#assignments_df = pd.DataFrame(assignments)
+assignments_df = pd.DataFrame(assignments)
+print(assignments_df)
+# Connecting with `gspread` here
+
+# DF TO EXCEL
+from pandas import ExcelWriter
+
+# writer = ExcelWriter('Assignments.xlsx')
+# assignments_df.to_excel(writer,'Sheet1')
+# writer.save()
 
 
+# Create a Pandas Excel writer using XlsxWriter as the engine.
+writer = pd.ExcelWriter('Results_2018.xlsx', engine='xlsxwriter')
+
+# Convert the dataframe to an XlsxWriter Excel object.
+assignments_df.to_excel(writer, sheet_name='Sheet1')
+companies_df.to_excel(writer, sheet_name = 'Sheet2')
+
+# Close the Pandas Excel writer and output the Excel file.
+writer.save()
 # For each student: Grab five preferences and make it into a list to find the 2 combinations that work
 
 # Once you have the 2 combinations that work, put Last Name, First Name, EID, Major, Year, Email and the 2 combinations
