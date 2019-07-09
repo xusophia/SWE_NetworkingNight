@@ -11,6 +11,8 @@ import pandas as pd
 import xlsxwriter
 from collections import defaultdict
 import gspread_dataframe as gd
+from matplotlib import pyplot as plt
+
 
 def Merge(*dict_args):
     assignments = {}
@@ -60,6 +62,8 @@ firstName_dict = {}
 firstName_dict['First Name:'] = []
 lastName_dict = {}
 lastName_dict['Last Name:'] = []
+major_dict={}
+major_dict['Major:']=[]
 eID_dict = {}
 eID_dict['EID:']=[]
 year_dict = {}
@@ -71,6 +75,11 @@ entree_dict['Entree Seating:']=[]
 dessert_dict = {}
 dessert_dict['Dessert Seating:']=[]
 
+preference_entree_dict = {}
+preference_entree_dict['Entree Preference']=[]
+preference_dessert_dict={}
+preference_dessert_dict['Dessert Preference']=[]
+
 # main: goes through each student (each row)
 for student in students_df.itertuples():
 
@@ -80,14 +89,15 @@ for student in students_df.itertuples():
     eID_dict['EID:'].append(eID)
     year_dict['Year:'].append(year)
     email_dict['E-mail:'].append(email)
+    major_dict['Major:'].append(major)
     # Create a list of the student's preferences
     student_preferences = [first,second,third,fourth,fifth]
     # Clear matchFound flag
     matchFound = 0
 
     # for loop that finds combinations where the combinations that work
-    for preference1 in student_preferences:
-        for preference2 in student_preferences:
+    for entree, preference1 in enumerate(student_preferences, 1):
+        for dessert, preference2 in enumerate(student_preferences, 1):
             if preference1 == preference2:
                 continue
             elif matchFound == 1:
@@ -102,17 +112,12 @@ for student in students_df.itertuples():
                         # Update & store number of seats left
                         companies_df.at[preference1, 'Entree'] = companies_df.at[preference1, 'Entree'] - 1
                         companies_df.at[preference2, 'Dessert'] = companies_df.at[preference2, 'Dessert'] - 1
+                        preference_entree_dict['Entree Preference'].append(entree)
+                        preference_dessert_dict['Dessert Preference'].append(dessert)
                         # Store the students choices into dictionary to be appended later in a dataframe
                         entree_dict['Entree Seating:'].append(preference1)
                         dessert_dict['Dessert Seating:'].append(preference2)
-    print(len(firstName_dict['First Name:']))
-    print(len(lastName_dict['Last Name:']))
-    print(len(eID_dict['EID:']))
-    print(len(year_dict['Year:']))
-    print(len(email_dict['E-mail:']))
-    print(len(entree_dict['Entree Seating:']))
-    print(len(dessert_dict['Dessert Seating:']))
-    print('*******************')
+
     if matchFound == 0:
         # If a match is not found, first iterate through the different companies to find at least one match
         # STUDENT picks Entree, WE pick Dessert
@@ -131,9 +136,7 @@ for student in students_df.itertuples():
                     companies_df.at[dessert_company, 'Dessert'] = companies_df.at[dessert_company, 'Dessert'] - 1
                     entree_dict['Entree Seating:'].append(preference)
                     dessert_dict['Dessert Seating:'].append(dessert_company)
-                    print(len(entree_dict['Entree Seating:']))
-                    print(len(dessert_dict['Dessert Seating:']))
-                    print('----------------------')
+
                     matchFound = 1
     if matchFound == 0:
         for preference in student_preferences:
@@ -148,49 +151,58 @@ for student in students_df.itertuples():
                     companies_df.at[entree_company,'Entree'] = companies_df.at[entree_company,'Entree'] - 1
                     entree_dict['Entree Seating:'].append(entree_company)
                     dessert_dict['Dessert Seating:'].append(preference)
-                    print(len(entree_dict['Entree Seating:']))
-                    print(len(dessert_dict['Dessert Seating:']))
-                    print('^^^^^^^^^^^^^^^^^^^^^^^^')
+
                     matchFound = 1
     if matchFound == 0: # all solutions have failed
         entree_dict['Entree Seating:'].append("failed")
         dessert_dict['Dessert Seating:'].append("failed")
-        print(len(entree_dict['Entree Seating:']))
-        print(len(dessert_dict['Dessert Seating:']))
-        print('+++++++++++++++++++++++')
+
 
 
 # Now, Combine all of the dictionaries created into a data frame
-assignments = Merge(firstName_dict, lastName_dict, eID_dict,year_dict,email_dict,entree_dict, dessert_dict)
-print(len(firstName_dict['First Name:']))
-print(len(lastName_dict['Last Name:']))
-print(len(eID_dict['EID:']))
-print(len(year_dict['Year:']))
-print(len(email_dict['E-mail:']))
-print(len(entree_dict['Entree Seating:']))
-print(len(dessert_dict['Dessert Seating:']))
-assignments_df = pd.DataFrame(assignments)
-print(assignments_df)
-# Connecting with `gspread` here
+results = Merge(firstName_dict, lastName_dict, eID_dict,year_dict,email_dict,entree_dict, dessert_dict, major_dict)
 
-# DF TO EXCEL
-from pandas import ExcelWriter
+results_df = pd.DataFrame(results)
 
-# writer = ExcelWriter('Assignments.xlsx')
-# assignments_df.to_excel(writer,'Sheet1')
-# writer.save()
+# Create a data frame of only the successful assignments
+assignments_df = results_df[~((results_df['Entree Seating:'].str.contains('failed')))]
 
 
 # Create a Pandas Excel writer using XlsxWriter as the engine.
 writer = pd.ExcelWriter('Results_2018.xlsx', engine='xlsxwriter')
 
-# Convert the dataframe to an XlsxWriter Excel object.
-assignments_df.to_excel(writer, sheet_name='Sheet1')
-companies_df.to_excel(writer, sheet_name = 'Sheet2')
+# Convert the assignments dataframe to an XlsxWriter Excel object.
+results_df.to_excel(writer, sheet_name='Sheet1')
+assignments_df.to_excel(writer, sheet_name = 'Sheet2')
+
 
 # Close the Pandas Excel writer and output the Excel file.
 writer.save()
-# For each student: Grab five preferences and make it into a list to find the 2 combinations that work
+
+# Analysis of results
+
+# Analyze the preference number people got
+analysis = Merge(preference_entree_dict,preference_dessert_dict)
+analysis_df = pd.DataFrame(analysis)
+analysis_df.hist(column = ['Dessert Preference', 'Entree Preference'])
+plt.savefig('preferences.png')
+
+# Analyze the distribution of majors
+assignments_df[['Major:']].apply(pd.value_counts).plot(kind = 'bar')
+plt.yticks(fontsize = 10)
+plt.xticks(fontsize=5, rotation = 65)
+
+plt.savefig('Major_Distribution.png', dpi = 1000)
+
+# Analyze the distribution of years
+assignments_df[['Year:']].apply(pd.value_counts).plot(kind='bar')
+plt.xticks(fontsize = 6, rotation = 25)
+plt.savefig('Year_Distribution.png', dpi = 1000)
+
+
+
+
+# Create a histogram
 
 # Once you have the 2 combinations that work, put Last Name, First Name, EID, Major, Year, Email and the 2 combinations
 # that work into a dataframe
