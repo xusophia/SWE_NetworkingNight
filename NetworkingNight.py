@@ -19,6 +19,7 @@ def Merge(*dict_args):
     for dictionary in dict_args:
         assignments.update(dictionary)
     return assignments
+
 # ----------------------------------------------------------------------------------------------------------------------
 # Connecting to the sheet
 scope = ["https://spreadsheets.google.com/feeds",'https://www.googleapis.com/auth/spreadsheets',"https://www.googleapis.com/auth/drive.file","https://www.googleapis.com/auth/drive"]
@@ -130,10 +131,11 @@ for student in students_df.itertuples():
                 pickDessert_df = companies_df[(companies_df['Majors'].str.contains(major)) & (companies_df['Dessert'] > 0)]
                 if not pickDessert_df.empty:
                     # Update & store number of seats left
-                    companies_df.at[preference, 'Entree'] = companies_df.at[preference, 'Entree'] - 1
+
+                    companies_df.loc[preference, 'Entree'] = companies_df.at[preference, 'Entree'] - 1
                     dessert_co_labels = pickDessert_df.axes[0].tolist()
                     dessert_company = dessert_co_labels[0]
-                    companies_df.at[dessert_company, 'Dessert'] = companies_df.at[dessert_company, 'Dessert'] - 1
+                    companies_df.loc[dessert_company, 'Dessert'] = companies_df.at[dessert_company, 'Dessert'] - 1
                     entree_dict['Entree Seating:'].append(preference)
                     dessert_dict['Dessert Seating:'].append(dessert_company)
 
@@ -145,10 +147,10 @@ for student in students_df.itertuples():
             if (not findDessert_df.empty) & (matchFound != 1):
                 pickEntree_df = companies_df[(companies_df['Majors'].str.contains(major)) & companies_df['Entree'].between(1,7)]
                 if not pickEntree_df.empty:
-                    companies_df.at[preference,'Dessert']=companies_df.at[preference,'Dessert'] - 1
+                    companies_df.loc[preference,'Dessert'] = companies_df.loc[preference,'Dessert'] - 1
                     entree_co_labels = pickEntree_df.axes[0].tolist()
                     entree_company = entree_co_labels[0]
-                    companies_df.at[entree_company,'Entree'] = companies_df.at[entree_company,'Entree'] - 1
+                    companies_df.loc[entree_company,'Entree'] = companies_df.at[entree_company,'Entree'] - 1
                     entree_dict['Entree Seating:'].append(entree_company)
                     dessert_dict['Dessert Seating:'].append(preference)
 
@@ -161,12 +163,10 @@ for student in students_df.itertuples():
 
 # Now, Combine all of the dictionaries created into a data frame
 results = Merge(firstName_dict, lastName_dict, eID_dict,year_dict,email_dict,entree_dict, dessert_dict, major_dict)
-
 results_df = pd.DataFrame(results)
 
 # Create a data frame of only the successful assignments
 assignments_df = results_df[~((results_df['Entree Seating:'].str.contains('failed')))]
-
 
 # Create a Pandas Excel writer using XlsxWriter as the engine.
 writer = pd.ExcelWriter('Results_2018.xlsx', engine='xlsxwriter')
@@ -174,7 +174,6 @@ writer = pd.ExcelWriter('Results_2018.xlsx', engine='xlsxwriter')
 # Convert the assignments dataframe to an XlsxWriter Excel object.
 results_df.to_excel(writer, sheet_name='Sheet1')
 assignments_df.to_excel(writer, sheet_name = 'Sheet2')
-
 
 # Close the Pandas Excel writer and output the Excel file.
 writer.save()
@@ -190,15 +189,24 @@ plt.savefig('preferences.png')
 # Analyze the distribution of majors
 assignments_df[['Major:']].apply(pd.value_counts).plot(kind = 'bar')
 plt.yticks(fontsize = 10)
-plt.xticks(fontsize=5, rotation = 65)
-
+plt.xticks(fontsize=4, rotation = 35)
+plt.title('Successful Assignments: Major Distribution')
 plt.savefig('Major_Distribution.png', dpi = 1000)
-
+results_df[['Major:']].apply(pd.value_counts).plot(kind = 'bar')
+plt.xticks(fontsize = 6)
+plt.title('ALL: Major Distribution')
+plt.gcf().subplots_adjust(bottom = 0.35)
+plt.savefig('Major_Distribution_ALL.png', dpi = 1000)
 # Analyze the distribution of years
 assignments_df[['Year:']].apply(pd.value_counts).plot(kind='bar')
-plt.xticks(fontsize = 6, rotation = 25)
+plt.xticks(fontsize = 9, rotation = 25)
+plt.title('Successful Assignments: Year Distribution')
 plt.savefig('Year_Distribution.png', dpi = 1000)
-
+#Need to analyze the distribution of years of the succesful assignments vs total
+results_df[['Year:']].apply(pd.value_counts).plot(kind = 'bar')
+plt.xticks(fontsize = 6, rotation = 45)
+plt.title('All: Year Distribution')
+plt.savefig('Year_Distribution_ALL.png', dpi = 1000)
 
 
 
