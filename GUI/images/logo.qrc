@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="SWE">
+    <file>SWE_Logo.png</file>
+  </qresource>
+</RCC>
