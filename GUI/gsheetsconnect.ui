@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>543</height>
+    <width>804</width>
+    <height>752</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,53 +15,29 @@
   </property>
   <property name="styleSheet">
    <string notr="true">
-background-color: rgb(245, 224, 255);</string>
+background-color: rgb(245, 224, 255);
+</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="mainBtn">
-    <property name="geometry">
-     <rect>
-      <x>270</x>
-      <y>380</y>
-      <width>261</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>Helvetica</family>
-      <pointsize>12</pointsize>
-      <weight>75</weight>
-      <bold>true</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>Press here to continue.</string>
-    </property>
-   </widget>
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>350</x>
+      <x>30</x>
       <y>10</y>
-      <width>431</width>
-      <height>231</height>
+      <width>631</width>
+      <height>21</height>
      </rect>
     </property>
     <property name="font">
      <font>
       <family>Helvetica</family>
-      <pointsize>12</pointsize>
+      <pointsize>10</pointsize>
       <weight>75</weight>
-      <italic>false</italic>
       <bold>true</bold>
      </font>
     </property>
     <property name="text">
-     <string>Welcome to the Networking Night Assignment Program! This program is intended to assign students to 2 companies (1 for entree seating, 1 for dessert seating). This program relies on a connection to Google Sheets and will produce an Excel file of your results. </string>
-    </property>
-    <property name="wordWrap">
-     <bool>true</bool>
+     <string>Now, we are going to connect to the Google Sheets in order to extract the data.</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_2">
@@ -69,63 +45,63 @@ background-color: rgb(245, 224, 255);</string>
      <rect>
       <x>30</x>
       <y>30</y>
-      <width>301</width>
-      <height>181</height>
+      <width>731</width>
+      <height>51</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <family>Helvetica</family>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
     <property name="text">
-     <string/>
+     <string>First, share the google sheets file with swe-networkingnight@swe-networkingnight.iam.gserviceaccount.com</string>
     </property>
-    <property name="pixmap">
-     <pixmap>../SWE_NetworkingNight2/GUI/images/SWE_Logo.png</pixmap>
-    </property>
-    <property name="scaledContents">
+    <property name="wordWrap">
      <bool>true</bool>
     </property>
    </widget>
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>450</y>
-      <width>751</width>
-      <height>71</height>
+      <x>240</x>
+      <y>80</y>
+      <width>311</width>
+      <height>331</height>
      </rect>
     </property>
-    <property name="font">
-     <font>
-      <family>Helvetica 45 Light</family>
-      <pointsize>10</pointsize>
-      <weight>50</weight>
-      <bold>false</bold>
-     </font>
-    </property>
     <property name="text">
-     <string>This program was designed by Sophia Xu. If there are any problems or you have any questions, please let me know at sophiahxu@gmail.com.  </string>
+     <string/>
     </property>
-    <property name="wordWrap">
+    <property name="pixmap">
+     <pixmap>Images/Sharing_GSheetsAuth.PNG</pixmap>
+    </property>
+    <property name="scaledContents">
      <bool>true</bool>
     </property>
    </widget>
    <widget class="QLabel" name="label_4">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>520</y>
-      <width>201</width>
-      <height>31</height>
+      <x>30</x>
+      <y>410</y>
+      <width>731</width>
+      <height>51</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <family>Helvetica 45 Light</family>
+      <family>Helvetica</family>
       <pointsize>10</pointsize>
-      <weight>50</weight>
-      <bold>false</bold>
+      <weight>75</weight>
+      <bold>true</bold>
      </font>
     </property>
     <property name="text">
-     <string>Last Updated: 7/17/2019</string>
+     <string>Now, enter the name of your file. Make sure this is the EXACT file name (no additional spaces or characters). It is recommended you just Ctrl-A in the Google Sheets title field.</string>
     </property>
     <property name="wordWrap">
      <bool>true</bool>
@@ -134,9 +110,28 @@ background-color: rgb(245, 224, 255);</string>
    <widget class="QLabel" name="label_5">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>250</y>
-      <width>371</width>
+      <x>110</x>
+      <y>460</y>
+      <width>591</width>
+      <height>131</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap>Images/SaveTitle.PNG</pixmap>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_6">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>590</y>
+      <width>731</width>
       <height>31</height>
      </rect>
     </property>
@@ -149,58 +144,63 @@ background-color: rgb(245, 224, 255);</string>
      </font>
     </property>
     <property name="text">
-     <string>First, make sure you have the following:</string>
+     <string>Enter the file name below:</string>
     </property>
     <property name="wordWrap">
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QLabel" name="label_6">
+   <widget class="QLineEdit" name="lineEdit">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>290</y>
-      <width>181</width>
-      <height>31</height>
+      <x>80</x>
+      <y>630</y>
+      <width>701</width>
+      <height>51</height>
      </rect>
     </property>
-    <property name="font">
-     <font>
-      <family>Helvetica 45 Light</family>
-      <pointsize>10</pointsize>
-      <weight>50</weight>
-      <bold>false</bold>
-     </font>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(255, 255, 255);</string>
     </property>
     <property name="text">
-     <string>- an internet connection</string>
-    </property>
-    <property name="wordWrap">
-     <bool>true</bool>
+     <string/>
     </property>
    </widget>
    <widget class="QLabel" name="label_7">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>330</y>
-      <width>401</width>
-      <height>31</height>
+      <x>80</x>
+      <y>700</y>
+      <width>421</width>
+      <height>21</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <family>Helvetica 45 Light</family>
+      <family>Helvetica</family>
       <pointsize>10</pointsize>
-      <weight>50</weight>
-      <bold>false</bold>
+      <weight>75</weight>
+      <bold>true</bold>
      </font>
     </property>
     <property name="text">
-     <string>- Google Sheets file with all the student responses</string>
+     <string>Press this button once you've entered the file name:</string>
     </property>
     <property name="wordWrap">
      <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>700</y>
+      <width>93</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Done</string>
     </property>
    </widget>
   </widget>
